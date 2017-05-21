@@ -1,6 +1,6 @@
 time: 8-10, 10-12, 14-16, 16-18
 days: D1, D2
 teachers: T1, T2, T3
-constraints_for_teachers: T1(D1,16-18), T1(D2,14-16), T2(D1,16-18), T2(D2,10-12), T3(D1,14-16), T3(D2,8-10)
+time_constraints_for_teachers: T1(D1,16-18) T1(D2,14-16) T2(D1,16-18) T2(D2,10-12) T3(D1,14-16) T3(D2,8-10)
 students: SG1, SG2, SG3
 rooms: R1, R2, R3

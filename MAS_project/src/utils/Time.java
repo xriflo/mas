@@ -8,10 +8,21 @@ public class Time {
 		this.startingHour = startingHour;
 		this.endingHour = endingHour;
 	}
+	
+	public Integer getStartingHour() {
+		return startingHour;
+	}
 
-	@Override
-	public String toString() {
-		return startingHour + "-" + endingHour;
+	public void setStartingHour(Integer startingHour) {
+		this.startingHour = startingHour;
+	}
+
+	public Integer getEndingHour() {
+		return endingHour;
+	}
+
+	public void setEndingHour(Integer endingHour) {
+		this.endingHour = endingHour;
 	}
 
 	@Override
@@ -45,20 +56,9 @@ public class Time {
 		return true;
 	}
 
-	public Integer getStartingHour() {
-		return startingHour;
-	}
-
-	public void setStartingHour(Integer startingHour) {
-		this.startingHour = startingHour;
-	}
-
-	public Integer getEndingHour() {
-		return endingHour;
-	}
-
-	public void setEndingHour(Integer endingHour) {
-		this.endingHour = endingHour;
+	@Override
+	public String toString() {
+		return startingHour + "-" + endingHour;
 	}
 	
 }

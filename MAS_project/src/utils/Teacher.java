@@ -1,19 +1,14 @@
 package utils;
+import java.util.*;
 
-public class Day {
+public class Teacher {
 	private String name;
+	public ArrayList<Constraint> constraints;
 
-	public Day(String name) {
+	public Teacher(String name) {
 		super();
 		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		this.constraints = new ArrayList<Constraint>();
 	}
 
 	@Override
@@ -32,7 +27,7 @@ public class Day {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Day other = (Day) obj;
+		Teacher other = (Teacher) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -41,10 +36,18 @@ public class Day {
 		return true;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public String toString() {
-		return "Day " + name;
+		return "Teacher " + name;
 	}
-	
+
 	
 }

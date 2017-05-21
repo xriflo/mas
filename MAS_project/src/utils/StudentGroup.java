@@ -1,13 +1,13 @@
 package utils;
 
-public class Day {
+public class StudentGroup {
 	private String name;
 
-	public Day(String name) {
+	public StudentGroup(String name) {
 		super();
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -32,7 +32,7 @@ public class Day {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Day other = (Day) obj;
+		StudentGroup other = (StudentGroup) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -43,7 +43,7 @@ public class Day {
 
 	@Override
 	public String toString() {
-		return "Day " + name;
+		return "StudentGroup " + name;
 	}
 	
 	

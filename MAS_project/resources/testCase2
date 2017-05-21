@@ -5,4 +5,4 @@ time_constraints_for_teachers: T1(D1,16-18), T1(D2,14-16), T2(D1,16-18), T2(D2,1
 students: SG1, SG2, SG3
 rooms: R1, R2, R3
 time_constraints_for_rooms: R1(D1,10-12), R2(D2,8-10), R2(D2,16-18), R3(D1,14-16), R3(D2,16-18)
-physical_constraints_for_rooms: has_projector(R3,no)
+physical_constraints_for_rooms: hasProjector(R3,false)
