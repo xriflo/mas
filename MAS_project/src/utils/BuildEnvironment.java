@@ -3,8 +3,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.swing.plaf.synth.SynthSpinnerUI;
+import java.util.HashMap;
 
 public class BuildEnvironment {
 	ArrayList<Time> time;
@@ -12,6 +11,7 @@ public class BuildEnvironment {
 	ArrayList<Teacher> teachers;
 	ArrayList<StudentGroup> students;
 	ArrayList<Room> rooms;
+	HashMap<Teacher, Integer> no_claases_to_take;
 
 	public void parseTestCase(String testCaseName) {
 		try(BufferedReader br = new BufferedReader(new FileReader(testCaseName))) {
@@ -85,22 +85,28 @@ public class BuildEnvironment {
 			    			}
 		    				break;
 	    				default:
-		    				System.out.println("error1");
+		    				System.out.println("error on constraint: "+params[0]);
+		    			}
+		    		}
+		    		break;
+		    	case "no_classes_to_take":
+		    		for(String constraint:tokens[1].trim().split(" ")) {
+		    			String[] params = constraint.split("\\W");
+		    			Integer teacher_index = teachers.indexOf(new Teacher(params[0]));
+
+		    			if(teacher_index!=-1) {
+			    			Teacher teacher = teachers.get(teacher_index);
+			    			no_claases_to_take.put(teacher, Integer.parseInt(params[1]));
 		    			}
 		    		}
 		    		break;
 	    		default:
-	    			System.out.println("error2");
+	    			System.out.println("error parsing file, unknown type: "+tokens[0]);
 		    	}
 		    }
-		    // line is not visible here.
 		}
 		catch(IOException e) {
 			e.printStackTrace();
-		}
-		
-		for(Room room:rooms) {
-			System.out.println(room.constraints);
 		}
 	}
 	
@@ -112,6 +118,7 @@ public class BuildEnvironment {
 		this.teachers = new ArrayList<Teacher>();
 		this.students = new ArrayList<StudentGroup>();
 		this.rooms = new ArrayList<Room>();
+		this.no_claases_to_take = new HashMap<Teacher, Integer>();
 	}
 
 }

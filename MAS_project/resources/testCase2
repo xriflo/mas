@@ -3,6 +3,7 @@ days: D1, D2
 teachers: T1, T2, T3
 time_constraints_for_teachers: T1(D1,16-18), T1(D2,14-16), T2(D1,16-18), T2(D2,10-12), T3(D1,14-16), T3(D2,8-10)
 students: SG1, SG2, SG3
+no_classes_to_take: T1(2), T2(2), T3(2)
 rooms: R1, R2, R3
 time_constraints_for_rooms: R1(D1,10-12), R2(D2,8-10), R2(D2,16-18), R3(D1,14-16), R3(D2,16-18)
 physical_constraints_for_rooms: hasProjector(R3,false)
