@@ -1,29 +1,13 @@
 package utils;
 
 public class TimeConstraint extends Constraint{
-	private Day day;
-	private Time hour;
+	public Day day;
+	public Time time;
 	
-	public TimeConstraint(Day day, Time hour) {
+	public TimeConstraint(Day day, Time time) {
 		super();
 		this.day = day;
-		this.hour = hour;
-	}
-
-	public Day getDay() {
-		return day;
-	}
-
-	public void setDay(Day day) {
-		this.day = day;
-	}
-
-	public Time getHour() {
-		return hour;
-	}
-
-	public void setHour(Time hour) {
-		this.hour = hour;
+		this.time = time;
 	}
 
 	@Override
@@ -31,7 +15,7 @@ public class TimeConstraint extends Constraint{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((day == null) ? 0 : day.hashCode());
-		result = prime * result + ((hour == null) ? 0 : hour.hashCode());
+		result = prime * result + ((time == null) ? 0 : time.hashCode());
 		return result;
 	}
 
@@ -49,17 +33,17 @@ public class TimeConstraint extends Constraint{
 				return false;
 		} else if (!day.equals(other.day))
 			return false;
-		if (hour == null) {
-			if (other.hour != null)
+		if (time == null) {
+			if (other.time != null)
 				return false;
-		} else if (!hour.equals(other.hour))
+		} else if (!time.equals(other.time))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "(" + day + ", " + hour + ")";
+		return "(" + day + ", " + time + ")";
 	}
 	
 	

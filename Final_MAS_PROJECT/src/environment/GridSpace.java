@@ -1,22 +1,48 @@
 package environment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import utils.Constraint;
 import utils.Day;
+import utils.HasProjecterConstraint;
 import utils.Room;
 import utils.Time;
+import utils.TimeConstraint;
 
 public class GridSpace {
-	public ArrayList<Cell> cells;
 	public ArrayList<Day> days;
 	public ArrayList<Time> times;
 	public ArrayList<Room> rooms;
+	public ArrayList<Cell> cells;
 	
-	public GridSpace(ArrayList<Day> days, ArrayList<Time> times, ArrayList<Room> rooms) {
-		this.cells = new ArrayList<Cell>();
+	public GridSpace(ArrayList<Day> days, ArrayList<Time> times, ArrayList<Room> rooms, HashMap<Room, ArrayList<Constraint>> constraints_for_room) {
 		this.days = days;
 		this.times = times;
 		this.rooms = rooms;
+		this.cells = new ArrayList<Cell>();
+		
+		for(Day day:days)
+			for(Time time:times)
+				for(Room room:rooms) {
+					Cell cell = new Cell(day, time, room);
+					cell.constraints = new ArrayList<Constraint>();
+					ArrayList<Constraint> constraintForRoom = constraints_for_room.get(room);
+					if(constraintForRoom!=null) {
+						for(Constraint constr:constraintForRoom) {
+							if(constr instanceof HasProjecterConstraint)
+								cell.constraints.add(constr);
+							else if(constr instanceof TimeConstraint) {
+								TimeConstraint tc = (TimeConstraint)constr;
+								if(tc.day.equals(day) && tc.time.equals(time))
+									cell.constraints.add(tc);
+							}
+						}
+						
+					}
+					cells.add(cell);
+				}
+		
 	}
 	
 	private Cell getSpecificCell(Day day, Time time, Room room) {
@@ -66,10 +92,8 @@ public class GridSpace {
 	@Override
 	public String toString() {
 		String toStringVar = "GridSpace [\n";
-		for(int i=0; i<days.size(); i++)
-			for(int j=0; j<times.size(); j++)
-				for(int k=0; k<rooms.size(); k++)
-					toStringVar += new Cell(days.get(i), times.get(j), rooms.get(k))+ "\n";
+		for(Cell cell:cells)
+			System.out.println(cell);
 		toStringVar += "\n";
 		return toStringVar;
 	}

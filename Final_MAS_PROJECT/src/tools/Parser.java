@@ -18,9 +18,11 @@ import utils.TimeConstraint;
 public class Parser {
 	public ArrayList<Time> times;
 	public ArrayList<Day> days;
+	public ArrayList<Room> rooms;
+	
 	public ArrayList<Teacher> teachers;
 	public ArrayList<StudentGroup> students;
-	public ArrayList<Room> rooms;
+	
 	public HashMap<Teacher, Integer> no_claases_to_take;
 	public HashMap<Room, ArrayList<Constraint>> constraints_for_room;
 
@@ -86,7 +88,6 @@ public class Parser {
 		    		}
 		    		break;
 		    	case "physical_constraints_for_rooms":
-		    		System.out.println("aici");
 		    		for(String constraint:tokens[1].trim().split(" ")) {
 		    			String[] params = constraint.split("\\W");
 		    			switch(params[0]) {
@@ -128,16 +129,17 @@ public class Parser {
 		catch(IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(constraints_for_room);
 	}
 	
 	public Parser() {
 		super();
 		this.times = new ArrayList<Time>();
 		this.days = new ArrayList<Day>();
+		this.rooms = new ArrayList<Room>();
+		
 		this.teachers = new ArrayList<Teacher>();
 		this.students = new ArrayList<StudentGroup>();
-		this.rooms = new ArrayList<Room>();
+		
 		this.no_claases_to_take = new HashMap<Teacher, Integer>();
 		this.constraints_for_room = new HashMap<Room, ArrayList<Constraint>>();
 	}
