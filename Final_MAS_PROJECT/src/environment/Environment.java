@@ -1,7 +1,9 @@
 package environment;
 
 public class Environment {
-	public Environment() {
-		
+	GridSpace grid;
+	
+	public Environment(GridSpace grid) {
+		this.grid = grid;
 	}
 }

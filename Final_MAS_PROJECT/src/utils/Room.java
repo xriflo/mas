@@ -5,7 +5,6 @@ public class Room {
 	private String name;
 
 	public Room(String name) {
-		super();
 		this.name = name;
 	}
 

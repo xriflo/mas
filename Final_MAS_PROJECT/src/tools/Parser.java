@@ -1,4 +1,4 @@
-package environment;
+package tools;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,8 +15,8 @@ import utils.Teacher;
 import utils.Time;
 import utils.TimeConstraint;
 
-public class BuildEnvironment {
-	public ArrayList<Time> time;
+public class Parser {
+	public ArrayList<Time> times;
 	public ArrayList<Day> days;
 	public ArrayList<Teacher> teachers;
 	public ArrayList<StudentGroup> students;
@@ -32,7 +32,7 @@ public class BuildEnvironment {
 		    	case "time":
 		    		for(String interval:tokens[1].trim().split("\\s*,\\s*")) {
 		    			String[] hours = interval.split("-");
-		    			time.add(new Time(Integer.parseInt(hours[0]), Integer.parseInt(hours[1])));
+		    			times.add(new Time(Integer.parseInt(hours[0]), Integer.parseInt(hours[1])));
 		    		}
 		    		break;
 		    	case "days":
@@ -131,9 +131,9 @@ public class BuildEnvironment {
 		System.out.println(constraints_for_room);
 	}
 	
-	public BuildEnvironment() {
+	public Parser() {
 		super();
-		this.time = new ArrayList<Time>();
+		this.times = new ArrayList<Time>();
 		this.days = new ArrayList<Day>();
 		this.teachers = new ArrayList<Teacher>();
 		this.students = new ArrayList<StudentGroup>();

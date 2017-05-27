@@ -1,15 +1,20 @@
 package environment;
 
+import java.util.ArrayList;
+
+import utils.Constraint;
 import utils.Day;
 import utils.Room;
 import utils.Time;
 
 public class Cell {
+	ArrayList<Constraint> constraints;
 	Day day;
 	Time time;
 	Room room;
 	
 	public Cell(Day day, Time time, Room room) {
+		this.constraints = new ArrayList<Constraint>();
 		this.day = day;
 		this.time = time;
 		this.room = room;
@@ -54,7 +59,7 @@ public class Cell {
 
 	@Override
 	public String toString() {
-		return "Cell (day=" + day + ", time=" + time + ", room=" + room + ")";
+		return "Cell (day=" + day + ", time=" + time + ", room=" + room+ ", constraints=" + constraints + ")";
 	}
 	
 	
