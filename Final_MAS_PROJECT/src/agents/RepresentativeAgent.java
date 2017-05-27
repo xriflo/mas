@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import environment.Environment;
 import utils.Entity;
 
-public class RepresentativeAgent {
+public class RepresentativeAgent extends Agent{
 	Entity entity;
 	ArrayList<BookingAgent> bas;
 	
@@ -20,8 +20,17 @@ public class RepresentativeAgent {
 			for(Integer time=0; time<times; time++) {
 				BookingAgent ba = new BookingAgent(this, env);
 				ba.stalkingEntity = e;
-				bas.add(new BookingAgent(this, env));
+				bas.add(ba);
+				env.bas.add(ba);
 			}
 		}
+		System.out.println(this+": "+bas.size());
 	}
+
+	@Override
+	public String toString() {
+		return "RepresentativeAgent [entity=" + entity + "]";
+	}
+	
+	
 }

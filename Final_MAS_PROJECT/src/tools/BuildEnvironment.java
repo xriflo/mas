@@ -10,7 +10,6 @@ import utils.Teacher;
 
 public class BuildEnvironment {
 	Environment env;
-	ArrayList<agents.RepresentativeAgent> ras;
 	
 	public BuildEnvironment() {
 		// TODO Auto-generated constructor stub

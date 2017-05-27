@@ -1,6 +1,8 @@
 import environment.Environment;
 import tools.BuildEnvironment;
 import tools.Parser;
+import utils.Entity;
+import utils.Teacher;
 
 public class Main {
 
