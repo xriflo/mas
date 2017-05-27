@@ -2,6 +2,7 @@ package agents;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Map.Entry;
 
 import environment.Environment;
@@ -20,6 +21,8 @@ public class RepresentativeAgent extends Agent{
 			for(Integer time=0; time<times; time++) {
 				BookingAgent ba = new BookingAgent(this, env);
 				ba.stalkingEntity = e;
+				ba.currCell = env.grid.cells.get(new Random().nextInt(env.grid.cells.size()));
+				ba.constraints = entity.constraints;
 				bas.add(ba);
 				env.bas.add(ba);
 			}

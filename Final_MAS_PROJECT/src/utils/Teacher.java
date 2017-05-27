@@ -3,12 +3,11 @@ import java.util.*;
 
 public class Teacher extends Entity{
 	private String name;
-	public ArrayList<Constraint> constraints;
+	
 
 	public Teacher(String name) {
 		super();
 		this.name = name;
-		this.constraints = new ArrayList<Constraint>();
 	}
 
 	@Override

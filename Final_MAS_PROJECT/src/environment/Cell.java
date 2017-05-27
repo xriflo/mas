@@ -2,22 +2,25 @@ package environment;
 
 import java.util.ArrayList;
 
+import agents.BookingAgent;
 import utils.Constraint;
 import utils.Day;
 import utils.Room;
 import utils.Time;
 
 public class Cell {
-	ArrayList<Constraint> constraints;
-	Day day;
-	Time time;
-	Room room;
+	public ArrayList<Constraint> constraints;
+	public Day day;
+	public Time time;
+	public Room room;
+	public BookingAgent bookedBy;
 	
 	public Cell(Day day, Time time, Room room) {
 		this.constraints = new ArrayList<Constraint>();
 		this.day = day;
 		this.time = time;
 		this.room = room;
+		this.bookedBy = null;
 	}
 
 	@Override
