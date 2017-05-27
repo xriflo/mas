@@ -1,24 +1,27 @@
 package agents;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
+import environment.Environment;
 import utils.Entity;
 
 public class RepresentativeAgent {
 	Entity entity;
-	Integer no_be;
-	ArrayList<BookingAgent> be;
+	ArrayList<BookingAgent> bas;
 	
-	public RepresentativeAgent(Entity entity) {
-		this.no_be = 0;
+	public RepresentativeAgent(Entity entity, Environment env) {
 		this.entity = entity;
-		this.be = new ArrayList<BookingAgent>();
-	}
-
-	public void setNo_be(Integer no_be) {
-		this.no_be = no_be;
-		for(int i=0; i<no_be; i++) {
-			be.add(new BookingAgent());
+		this.bas = new ArrayList<BookingAgent>();
+		for(Entry<Entity, Integer> entry : entity.stalkingOtherEntities.entrySet()) {
+			Entity e = entry.getKey();
+			Integer times = entry.getValue();
+			for(Integer time=0; time<times; time++) {
+				BookingAgent ba = new BookingAgent(this, env);
+				ba.stalkingEntity = e;
+				bas.add(new BookingAgent(this, env));
+			}
 		}
-	}	
+	}
 }

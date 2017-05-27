@@ -3,11 +3,13 @@ package tools;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import utils.Constraint;
 import utils.Day;
+import utils.Entity;
 import utils.HasProjecterConstraint;
 import utils.Room;
 import utils.StudentGroup;
@@ -20,12 +22,14 @@ public class Parser {
 	public ArrayList<Day> days;
 	public ArrayList<Room> rooms;
 	
-	public ArrayList<Teacher> teachers;
+	public ArrayList<Entity> entities;
 	public ArrayList<StudentGroup> students;
-	
+	public ArrayList<Teacher> teachers;
+
 	public HashMap<Teacher, Integer> no_claases_to_take;
 	public HashMap<Room, ArrayList<Constraint>> constraints_for_room;
-
+	
+	Integer no_students=0, no_teachers=0;
 	public void parseTestCase(String testCaseName) {
 		try(BufferedReader br = new BufferedReader(new FileReader(testCaseName))) {
 		    for(String line; (line = br.readLine()) != null; ) {
@@ -42,16 +46,19 @@ public class Parser {
 		    			days.add(new Day(day));
 		    		break;
 		    	case "teachers":
-		    		for(String teacher:tokens[1].trim().split("\\s*,\\s*"))
-		    			teachers.add(new Teacher(teacher));
+		    		for(String teacher:tokens[1].trim().split("\\s*,\\s*")) {
+		    			Teacher t = new Teacher(teacher);
+		    			entities.add(t);
+		    			teachers.add(t);
+		    		}
 		    		break;
 		    	case "time_constraints_for_teachers":
 		    		for(String constraint:tokens[1].trim().split(" ")) {
 		    			String[] params = constraint.split("\\W");
-		    			Integer teacher_index = teachers.indexOf(new Teacher(params[0]));
+		    			Integer teacher_index = entities.indexOf(new Teacher(params[0]));
 
 		    			if(teacher_index!=-1) {
-			    			Teacher teacher = teachers.get(teacher_index);
+			    			Teacher teacher = (Teacher)entities.get(teacher_index);
 			    			TimeConstraint tc = new TimeConstraint(
 			    					new Day(params[1]),
 			    					new Time(Integer.parseInt(params[2]),Integer.parseInt(params[3])));
@@ -61,7 +68,9 @@ public class Parser {
 		    		break;
 		    	case "students":
 		    		for(String sg:tokens[1].trim().split("\\s*,\\s*")) {
-		    			students.add(new StudentGroup(sg));
+		    			StudentGroup s = new StudentGroup(sg);
+		    			entities.add(s);
+		    			students.add(s);
 		    		}
 		    		break;
 		    	case "rooms":
@@ -113,10 +122,10 @@ public class Parser {
 		    	case "no_classes_to_take":
 		    		for(String constraint:tokens[1].trim().split(" ")) {
 		    			String[] params = constraint.split("\\W");
-		    			Integer teacher_index = teachers.indexOf(new Teacher(params[0]));
+		    			Integer teacher_index = entities.indexOf(new Teacher(params[0]));
 
 		    			if(teacher_index!=-1) {
-			    			Teacher teacher = teachers.get(teacher_index);
+			    			Teacher teacher = (Teacher)entities.get(teacher_index);
 			    			no_claases_to_take.put(teacher, Integer.parseInt(params[1]));
 		    			}
 		    		}
@@ -129,6 +138,20 @@ public class Parser {
 		catch(IOException e) {
 			e.printStackTrace();
 		}
+		
+		for(Entity entity:entities) {
+			if(entity instanceof Teacher) {
+				Teacher t = (Teacher)entity;
+				for(StudentGroup sg:students) {
+					t.stalkingOtherEntities.put(sg, no_claases_to_take.get(t));
+				}
+			}
+			else {
+				StudentGroup sg = (StudentGroup)entity;
+				for(Teacher t:teachers)
+					sg.stalkingOtherEntities.put(t, no_claases_to_take.get(t));
+			}
+		}
 	}
 	
 	public Parser() {
@@ -137,8 +160,9 @@ public class Parser {
 		this.days = new ArrayList<Day>();
 		this.rooms = new ArrayList<Room>();
 		
-		this.teachers = new ArrayList<Teacher>();
+		this.entities = new ArrayList<Entity>();
 		this.students = new ArrayList<StudentGroup>();
+		this.teachers = new ArrayList<Teacher>();
 		
 		this.no_claases_to_take = new HashMap<Teacher, Integer>();
 		this.constraints_for_room = new HashMap<Room, ArrayList<Constraint>>();

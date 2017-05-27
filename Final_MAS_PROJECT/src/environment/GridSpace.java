@@ -65,7 +65,7 @@ public class GridSpace {
 		if(day_index>0)
 			neighboursOfDay.add(getSpecificCell(days.get(day_index-1), cell.time, cell.room));
 		if(day_index<(days.size()-1))
-			neighboursOfDay.add(getSpecificCell(days.get(day_index-1), cell.time, cell.room));
+			neighboursOfDay.add(getSpecificCell(days.get(day_index+1), cell.time, cell.room));
 		return neighboursOfDay;
 	}
 	
