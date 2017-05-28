@@ -12,19 +12,23 @@ import tools.Message;
 import tools.Settings;
 import utils.Constraint;
 import utils.Entity;
+import utils.StudentGroup;
+import utils.Teacher;
 
 public class BookingAgent extends Agent {
 	public Float time;
 	public boolean alive;
 	public Queue<Message> messages;
+	public Entity representingEntity;
 	public Entity stalkingEntity;
 	public RepresentativeAgent ra;
 	public Environment env;
 	public Cell currCell;
 	public Cell currReservedCell;
-	public Agent currPartner;
+	public BookingAgent currPartner;
 	public LinkedHashSet<Cell> memoryCells;
 	public ArrayList<BookingAgent> partners;
+	public ArrayList<BookingAgent> incompetentPartners;
 	public ArrayList<Constraint> constraints;
 	public ArrayList<Constraint> constraintsOfBrothers;
 	public ArrayList<Constraint> constraintsOfPartners;
@@ -36,6 +40,7 @@ public class BookingAgent extends Agent {
 		this.env = env;
 		this.memoryCells = new LinkedHashSet<Cell>();
 		this.partners = new ArrayList<BookingAgent>();
+		this.incompetentPartners = new ArrayList<BookingAgent>();
 		this.messages = new LinkedList<Message>();
 		this.currReservedCell = null;
 		this.currPartner = null;
@@ -71,6 +76,25 @@ public class BookingAgent extends Agent {
 		ArrayList<Cell> neighbours = env.grid.getNeighbours(currCell);
 		currCell = neighbours.get(new Random().nextInt(neighbours.size()));
 	}
+	
+	public boolean verifyPartnershipIncompetence(BookingAgent other) {
+		boolean isPartnerShipOk;
+		if(incompetentPartners.contains(other))
+			isPartnerShipOk = false;
+		else {
+			if((representingEntity instanceof Teacher && other.representingEntity instanceof StudentGroup) ||
+					representingEntity instanceof StudentGroup && other.representingEntity instanceof Teacher) {
+				if (computeCostPartnership(other) >= computeCostPartnership(currPartner))
+					isPartnerShipOk = false;
+				else
+					isPartnerShipOk = true;
+			}
+			else
+				isPartnerShipOk = false;
+		}
+		return isPartnerShipOk;
+	}
+	
 	public void addBAsToMemory() {
 		
 	}

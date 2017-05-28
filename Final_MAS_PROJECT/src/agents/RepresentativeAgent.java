@@ -20,6 +20,7 @@ public class RepresentativeAgent extends Agent{
 			Integer times = entry.getValue();
 			for(Integer time=0; time<times; time++) {
 				BookingAgent ba = new BookingAgent(this, env);
+				ba.representingEntity = entity;
 				ba.stalkingEntity = e;
 				ba.currCell = env.grid.cells.get(new Random().nextInt(env.grid.cells.size()));
 				ba.constraints = entity.constraints;
