@@ -12,8 +12,10 @@ import tools.Message;
 import tools.Settings;
 import utils.Constraint;
 import utils.Entity;
+import utils.HasProjecterConstraint;
 import utils.StudentGroup;
 import utils.Teacher;
+import utils.TimeConstraint;
 
 public class BookingAgent extends Agent {
 	public Float time;
@@ -27,8 +29,8 @@ public class BookingAgent extends Agent {
 	public Cell currReservedCell;
 	public BookingAgent currPartner;
 	public LinkedHashSet<Cell> memoryCells;
-	public ArrayList<BookingAgent> partners;
-	public ArrayList<BookingAgent> incompetentPartners;
+	public LinkedHashSet<Cell> incompetentCells;
+	public LinkedHashSet<BookingAgent> incompetentPartners;
 	public ArrayList<Constraint> constraints;
 	public ArrayList<Constraint> constraintsOfBrothers;
 	public ArrayList<Constraint> constraintsOfPartners;
@@ -39,8 +41,8 @@ public class BookingAgent extends Agent {
 		this.ra = ra;
 		this.env = env;
 		this.memoryCells = new LinkedHashSet<Cell>();
-		this.partners = new ArrayList<BookingAgent>();
-		this.incompetentPartners = new ArrayList<BookingAgent>();
+		this.incompetentCells = new LinkedHashSet<Cell>();
+		this.incompetentPartners = new LinkedHashSet<BookingAgent>();
 		this.messages = new LinkedList<Message>();
 		this.currReservedCell = null;
 		this.currPartner = null;
@@ -77,14 +79,14 @@ public class BookingAgent extends Agent {
 		currCell = neighbours.get(new Random().nextInt(neighbours.size()));
 	}
 	
-	public boolean verifyPartnershipIncompetence(BookingAgent other) {
+	public boolean verifyPartnershipIncompetence(BookingAgent otherBA) {
 		boolean isPartnerShipOk;
-		if(incompetentPartners.contains(other))
+		if(incompetentPartners.contains(otherBA))
 			isPartnerShipOk = false;
 		else {
-			if((representingEntity instanceof Teacher && other.representingEntity instanceof StudentGroup) ||
-					representingEntity instanceof StudentGroup && other.representingEntity instanceof Teacher) {
-				if (computeCostPartnership(other) >= computeCostPartnership(currPartner))
+			if((representingEntity instanceof Teacher && otherBA.representingEntity instanceof StudentGroup) ||
+					representingEntity instanceof StudentGroup && otherBA.representingEntity instanceof Teacher) {
+				if (computeCostPartnership(otherBA) >= computeCostPartnership(currPartner))
 					isPartnerShipOk = false;
 				else
 					isPartnerShipOk = true;
@@ -92,7 +94,60 @@ public class BookingAgent extends Agent {
 			else
 				isPartnerShipOk = false;
 		}
+		if(!isPartnerShipOk)
+			incompetentPartners.add(otherBA);
 		return isPartnerShipOk;
+	}
+	
+	public boolean verifyReservationIncompetence(Cell otherCell) {
+		boolean isReservationOk = true;
+		if(incompetentCells.contains(otherCell))
+			isReservationOk = false;
+		else {
+			if(representingEntity instanceof Teacher) {
+				for(Constraint constrX:representingEntity.constraints) {
+					if(constrX instanceof HasProjecterConstraint) {
+						//TBD
+						isReservationOk = isReservationOk && true;
+					}
+					else if(constrX instanceof TimeConstraint){
+						TimeConstraint tc = (TimeConstraint)constrX;
+						if(otherCell.day==tc.day || otherCell.time==tc.time)
+							isReservationOk = isReservationOk && false;
+					}
+				}
+			}
+		}
+		if(computeCostReservation(otherCell) >= computeCostReservation(currCell))
+			isReservationOk = false;
+		if(!isReservationOk)
+			incompetentCells.add(otherCell);
+		return isReservationOk;
+	}
+	
+	public boolean verifyPartnershipConflict(BookingAgent otherBA) {
+		boolean isPartnershipOk = false;
+		if(otherBA!=currPartner && verifyPartnershipConflict(otherBA)) {
+			if(computeCostPartnership(otherBA) < computeCostPartnership(currPartner))
+				isPartnershipOk = true;
+		}
+		return isPartnershipOk;
+	}
+	
+	public boolean verifyReservationConflict(Cell otherCell) {
+		boolean isReservationOk = false;
+		return isReservationOk;
+	}
+	
+	public boolean verifyReservationUselessness(Cell cell) {
+		boolean isReservationOk = true;
+		for(BookingAgent brother:ra.bas) {
+			if(brother!=this && brother.currCell==currCell) {
+				isReservationOk = false;
+				break;
+			}
+		}
+		return isReservationOk;
 	}
 	
 	public void addBAsToMemory() {
@@ -117,11 +172,11 @@ public class BookingAgent extends Agent {
 	}
 	
 	
-	public void partnerBA(BookingAgent ba) {
-		partners.add(ba);
+	public void partnerBA(BookingAgent otherBA) {
+		currPartner = otherBA;
 	}
-	public void unpartnetBA(BookingAgent ba) {
-		partners.remove(ba);
+	public void unpartnetBA(BookingAgent otherBA) {
+		currPartner = null;
 	}
 	public void bookCell(Cell cell) {
 		if(cell.equals(currCell) || memoryCells.contains(cell)) {
