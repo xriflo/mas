@@ -59,6 +59,7 @@ public class GridSpace {
 		return neighbours;
 	}
 	
+	
 	private ArrayList<Cell> getNextDay(Cell cell) {
 		ArrayList<Cell> neighboursOfDay = new ArrayList<Cell>();
 		Integer day_index = days.indexOf(cell.day);
@@ -88,6 +89,7 @@ public class GridSpace {
 			neighboursOfRoom.add(getSpecificCell(cell.day, cell.time, rooms.get(room_index+1)));
 		return neighboursOfRoom;
 	}
+	
 
 	@Override
 	public String toString() {

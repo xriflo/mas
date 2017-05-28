@@ -1,6 +1,7 @@
 package agents;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
@@ -14,13 +15,15 @@ import utils.Entity;
 
 public class BookingAgent extends Agent {
 	Float time;
+	public boolean alive;
 	public Queue<Message> messages;
 	public Entity stalkingEntity;
 	public RepresentativeAgent ra;
 	public Environment env;
 	public Cell currCell;
-	public Cell currReservationCell;
-	public ArrayList<Cell> memoryCells;
+	public Cell currReservedCell;
+	public Agent currPartner;
+	public LinkedHashSet<Cell> memoryCells;
 	public ArrayList<BookingAgent> partners;
 	public ArrayList<Constraint> constraints;
 	public ArrayList<Constraint> constraintsOfBrothers;
@@ -28,34 +31,50 @@ public class BookingAgent extends Agent {
 	
 	public BookingAgent(RepresentativeAgent ra, Environment env) {
 		this.time = Settings.EPSILON;
+		this.alive = true;
 		this.ra = ra;
 		this.env = env;
-		this.memoryCells = new ArrayList<Cell>();
+		this.memoryCells = new LinkedHashSet<Cell>();
 		this.partners = new ArrayList<BookingAgent>();
 		this.messages = new LinkedList<Message>();
-		this.currReservationCell = null;
+		this.currReservedCell = null;
+		this.currPartner = null;
 		this.constraints = new ArrayList<Constraint>();
 		this.constraintsOfBrothers = new ArrayList<Constraint>();
 		this.constraintsOfPartners = new ArrayList<Constraint>();
 	}
 	
 	public void doTheMonkeyBusiness() {
-		runPerceivePhase();
-		runDecisionPhase();
-		runActionPhase();
+		if(alive) {
+			processMessages();
+			if(currPartner!=null && currReservedCell!=null) {
+				if(Math.abs(computeCostReservation(currCell))<Settings.EPSILON)
+					currCell = currReservedCell;
+				else
+					processCurrentCell();
+			}
+			else {
+				moveToNextCell();
+				addBAsToMemory();
+				processEncountredBAs();
+				if(!(currPartner!=null || currReservedCell!=null))
+					processCurrentCell();
+			}
+		}
 	}
 	
-	public void runPerceivePhase() {
+	public void processMessages() {}
+	public void processCurrentCell() {
+		memoryCells.add(currCell);
+	}
+	public void moveToNextCell() {
+		ArrayList<Cell> neighbours = env.grid.getNeighbours(currCell);
+		currCell = neighbours.get(new Random().nextInt(neighbours.size()));
+	}
+	public void addBAsToMemory() {
 		
 	}
-	
-	public void runDecisionPhase() {
-		
-	}
-	
-	public void runActionPhase() {
-		
-	}
+	public void processEncountredBAs() {}
 	
 	public void computeNonCompatibilityPartnership(BookingAgent otherBA) {
 		
@@ -65,12 +84,12 @@ public class BookingAgent extends Agent {
 		
 	}
 	
-	public void computeCostPartnership(BookingAgent otherBA) {
-		
+	public Float computeCostPartnership(BookingAgent otherBA) {
+		return 0.0F;
 	}
 	
-	public void computeCostReservation(Cell otherCell) {
-		
+	public Float computeCostReservation(Cell otherCell) {
+		return 0.0F;
 	}
 	
 	

@@ -2,6 +2,7 @@ package tools;
 
 import java.util.ArrayList;
 
+import agents.BookingAgent;
 import agents.RepresentativeAgent;
 import environment.Environment;
 import environment.GridSpace;
@@ -26,5 +27,19 @@ public class BuildEnvironment {
 		for(Entity entity : parser.entities) {
 			env.ras.add(new RepresentativeAgent(entity, env));
 		}
+	}
+	
+	public void runEnv() {
+		//run agents
+		while(true) {
+			verifyAddRemoveConstraints();
+			for(BookingAgent ba:env.bas) {
+				ba.doTheMonkeyBusiness();
+			}
+		}
+	}
+	
+	public void verifyAddRemoveConstraints() {
+		
 	}
 }
