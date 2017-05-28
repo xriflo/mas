@@ -10,6 +10,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		BuildEnvironment be = new BuildEnvironment();
 		be.createEnv("resources/testCase2");
+		be.runEnv();
 	}
 
 }

@@ -14,7 +14,7 @@ import utils.Constraint;
 import utils.Entity;
 
 public class BookingAgent extends Agent {
-	Float time;
+	public Float time;
 	public boolean alive;
 	public Queue<Message> messages;
 	public Entity stalkingEntity;
@@ -106,9 +106,6 @@ public class BookingAgent extends Agent {
 	}
 	public void unbookCell(Cell cell) {
 		cell.bookedBy = null;
-	}
-	public void moveToAnotherCell() {
-		ArrayList<Cell> neighbours = env.grid.getNeighbours(currCell);
 	}
 	public void sendMessageToAgent(Message msg, Agent ag) {
 		if(ra.equals(ag) || partners.contains(ag)) {

@@ -27,7 +27,6 @@ public class RepresentativeAgent extends Agent{
 				env.bas.add(ba);
 			}
 		}
-		System.out.println(this+": "+bas.size());
 	}
 
 	@Override
