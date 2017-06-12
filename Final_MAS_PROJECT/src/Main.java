@@ -39,7 +39,7 @@ public class Main {
 		for(RepresentativeAgent ra:be.env.ras) {
 			System.out.println("RA: "+ra.entity);
 			for(BookingAgent2 ba:ra.bas) {
-				System.out.println(ba.representingEntity + " stalking entity " + ba.stalkingEntity + " with constraints "+ba.constraints);
+				System.out.println(ba.representingEntity +"="+ba.getClass() + " stalking entity " + ba.stalkingEntity + " with constraints "+ba.constraints);
 			}
 		}
 		

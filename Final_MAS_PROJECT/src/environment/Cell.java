@@ -3,6 +3,7 @@ package environment;
 import java.util.ArrayList;
 
 import agents.BookingAgent;
+import agents.BookingAgent2;
 import utils.Constraint;
 import utils.Day;
 import utils.Room;
@@ -13,8 +14,8 @@ public class Cell {
 	public Day day;
 	public Time time;
 	public Room room;
-	public BookingAgent bookedByTeacher;
-	public BookingAgent bookedBySG;
+	public BookingAgent2 bookedByTeacher;
+	public BookingAgent2 bookedBySG;
 	
 	public Cell(Day day, Time time, Room room) {
 		this.constraints = new ArrayList<Constraint>();

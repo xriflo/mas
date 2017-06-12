@@ -34,7 +34,7 @@ public class BookingAgent extends Agent {
 	public ArrayList<Constraint> constraints;
 	public ArrayList<Constraint> constraintsOfBrothers;
 	public ArrayList<Constraint> constraintsOfPartners;
-	
+	/*
 	public BookingAgent(RepresentativeAgent ra, Environment env) {
 		this.time = Settings.EPSILON;
 		this.alive = true;
@@ -139,7 +139,7 @@ public class BookingAgent extends Agent {
 		boolean isReservationOk = false;
 		return isReservationOk;
 	}
-	
+	*/
 	public boolean verifyReservationUselessness(Cell cell) {
 		return true;
 		/*
@@ -153,7 +153,7 @@ public class BookingAgent extends Agent {
 		return isReservationOk;
 		*/
 	}
-	
+	/*
 	public void addBAsToMemory() {
 		
 	}
@@ -196,6 +196,7 @@ public class BookingAgent extends Agent {
 		else
 			cell.bookedBySG = null;
 	}
+	*/
 }
 
 
