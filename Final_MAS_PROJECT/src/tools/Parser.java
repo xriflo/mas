@@ -16,6 +16,7 @@ import utils.StudentGroup;
 import utils.Teacher;
 import utils.Time;
 import utils.TimeConstraint;
+import utils.Tuple;
 
 public class Parser {
 	public ArrayList<Time> times;
@@ -26,7 +27,8 @@ public class Parser {
 	public ArrayList<StudentGroup> students;
 	public ArrayList<Teacher> teachers;
 
-	public HashMap<Teacher, Integer> no_claases_to_take;
+	public HashMap<Teacher, Integer> no_classes_to_take;
+	public HashMap<Teacher, Integer> no_classes_to_use_projector;
 	public HashMap<Room, ArrayList<Constraint>> constraints_for_room;
 	
 	Integer no_students=0, no_teachers=0;
@@ -88,11 +90,8 @@ public class Parser {
 			    			TimeConstraint tc = new TimeConstraint(
 			    					new Day(params[1]),
 			    					new Time(Integer.parseInt(params[2]),Integer.parseInt(params[3])));
-			    			ArrayList<Constraint> constr = constraints_for_room.get(room);
-			    			if(constr==null)
-			    				constr = new ArrayList<Constraint>();
-			    			constr.add(tc);
-			    			constraints_for_room.put(room, constr);
+			    			room.constraints.add(tc);
+			    				
 		    			}
 		    		}
 		    		break;
@@ -107,11 +106,7 @@ public class Parser {
 				    			Room room = rooms.get(room_index);
 				    			HasProjecterConstraint pc = new HasProjecterConstraint(
 				    					Boolean.parseBoolean(params[2]));
-				    			ArrayList<Constraint> constr = constraints_for_room.get(room);
-				    			if(constr==null)
-				    				constr = new ArrayList<Constraint>();
-				    			constr.add(pc);
-				    			constraints_for_room.put(room, constr);
+				    			room.constraints.add(pc);
 			    			}
 		    				break;
 	    				default:
@@ -120,13 +115,24 @@ public class Parser {
 		    		}
 		    		break;
 		    	case "no_classes_to_take":
-		    		for(String constraint:tokens[1].trim().split(" ")) {
-		    			String[] params = constraint.split("\\W");
-		    			Integer teacher_index = entities.indexOf(new Teacher(params[0]));
-
+		    		for(String t : tokens[1].split(",")) {
+		    			String attrs[] = t.trim().split("\\W");
+		    			Integer teacher_index =entities.indexOf(new Teacher(attrs[0]));
 		    			if(teacher_index!=-1) {
-			    			Teacher teacher = (Teacher)entities.get(teacher_index);
-			    			no_claases_to_take.put(teacher, Integer.parseInt(params[1]));
+		    				Teacher teacher = (Teacher)entities.get(teacher_index);
+		    				for(Integer pos=1; pos<attrs.length; pos+=2) {
+		    					switch(attrs[pos]) {
+		    					case "no_classes":
+		    						no_classes_to_take.put(teacher, Integer.parseInt(attrs[pos+1]));
+		    						break;
+		    					case "needs_projector":
+		    						no_classes_to_use_projector.put(teacher, Integer.parseInt(attrs[pos+1]));
+		    						break;
+	    						default:
+	    							System.out.println("error on attribute: "+attrs[pos]);
+		    							
+		    					}
+		    				}
 		    			}
 		    		}
 		    		break;
@@ -143,13 +149,13 @@ public class Parser {
 			if(entity instanceof Teacher) {
 				Teacher t = (Teacher)entity;
 				for(StudentGroup sg:students) {
-					t.stalkingOtherEntities.put(sg, no_claases_to_take.get(t));
+					t.stalkingOtherEntities.put(sg, new Tuple<Integer, Integer>(no_classes_to_take.get(t), no_classes_to_use_projector.get(t)));
 				}
 			}
 			else {
 				StudentGroup sg = (StudentGroup)entity;
 				for(Teacher t:teachers)
-					sg.stalkingOtherEntities.put(t, no_claases_to_take.get(t));
+					sg.stalkingOtherEntities.put(t, new Tuple<Integer, Integer>(no_classes_to_take.get(t), no_classes_to_use_projector.get(t)));
 			}
 		}
 	}
@@ -164,7 +170,8 @@ public class Parser {
 		this.students = new ArrayList<StudentGroup>();
 		this.teachers = new ArrayList<Teacher>();
 		
-		this.no_claases_to_take = new HashMap<Teacher, Integer>();
+		this.no_classes_to_take = new HashMap<Teacher, Integer>();
+		this.no_classes_to_use_projector = new HashMap<Teacher, Integer>();
 		this.constraints_for_room = new HashMap<Room, ArrayList<Constraint>>();
 	}
 

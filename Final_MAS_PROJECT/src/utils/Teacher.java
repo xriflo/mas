@@ -3,11 +3,12 @@ import java.util.*;
 
 public class Teacher extends Entity{
 	private String name;
-	
+	public Integer no_classes_to_use_a_projector;
 
 	public Teacher(String name) {
 		super();
 		this.name = name;
+		this.no_classes_to_use_a_projector = 0;
 	}
 
 	@Override

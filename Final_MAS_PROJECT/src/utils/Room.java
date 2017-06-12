@@ -3,9 +3,11 @@ import java.util.*;
 
 public class Room {
 	private String name;
+	public ArrayList<Constraint> constraints;
 
 	public Room(String name) {
 		this.name = name;
+		this.constraints = new ArrayList<Constraint>();
 	}
 
 	@Override

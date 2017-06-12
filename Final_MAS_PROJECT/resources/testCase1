@@ -5,3 +5,4 @@ time_constraints_for_teachers: T1(D1,16-18) T1(D2,14-16) T2(D1,16-18) T2(D2,10-1
 students: SG1, SG2, SG3
 no_classes_to_take: T1(2), T2(2), T3(2)
 rooms: R1, R2, R3
+physical_constraints_for_rooms: hasProjector(R1,false), hasProjector(R2,false), hasProjector(R3,true)

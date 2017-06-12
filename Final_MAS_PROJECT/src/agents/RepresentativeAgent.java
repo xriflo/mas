@@ -6,28 +6,41 @@ import java.util.Random;
 import java.util.Map.Entry;
 
 import environment.Environment;
+import utils.Constraint;
 import utils.Entity;
+import utils.HasProjecterConstraint;
+import utils.Tuple;
 
 public class RepresentativeAgent extends Agent{
-	Entity entity;
-	ArrayList<BookingAgent> bas;
+	public Entity entity;
+	public ArrayList<BookingAgent2> bas;
 	
 	public RepresentativeAgent(Entity entity, Environment env) {
 		this.entity = entity;
-		this.bas = new ArrayList<BookingAgent>();
-		for(Entry<Entity, Integer> entry : entity.stalkingOtherEntities.entrySet()) {
+		this.bas = new ArrayList<BookingAgent2>();
+		for(Entry<Entity, Tuple<Integer, Integer>> entry : entity.stalkingOtherEntities.entrySet()) {
 			Entity e = entry.getKey();
-			Integer times = entry.getValue();
-			for(Integer time=0; time<times; time++) {
-				BookingAgent ba = new BookingAgent(this, env);
-				ba.representingEntity = entity;
+			Integer times_to_take = entry.getValue().x;
+			Integer times_to_use_projector = entry.getValue().y;
+			for(Integer time=0; time<times_to_take; time++) {
+				BookingAgent2 ba = new BookingAgent2(this, env);
 				ba.stalkingEntity = e;
-				ba.currCell = env.grid.cells.get(new Random().nextInt(env.grid.cells.size()));
-				ba.constraints = entity.constraints;
+				if(times_to_use_projector!=0) {
+					ba.constraints.add(new HasProjecterConstraint(true));
+					times_to_use_projector--;
+				}
+				else {
+					ba.constraints.add(new HasProjecterConstraint(false));
+				}
+				System.out.println("BA="+ba.stalkingEntity+"is in cell ("+ba.currCell+") with neighbours "+env.grid.getNeighbours(ba.currCell));
 				bas.add(ba);
 				env.bas.add(ba);
 			}
 		}
+	}
+	
+	public void addRemoveConstraint(Constraint constraint) {
+		//TODO infor BAs
 	}
 
 	@Override

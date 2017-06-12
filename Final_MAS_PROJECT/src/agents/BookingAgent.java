@@ -44,6 +44,7 @@ public class BookingAgent extends Agent {
 		this.incompetentCells = new LinkedHashSet<Cell>();
 		this.incompetentPartners = new LinkedHashSet<BookingAgent>();
 		this.messages = new LinkedList<Message>();
+		this.currCell = null;
 		this.currReservedCell = null;
 		this.currPartner = null;
 		this.constraints = new ArrayList<Constraint>();
@@ -140,6 +141,8 @@ public class BookingAgent extends Agent {
 	}
 	
 	public boolean verifyReservationUselessness(Cell cell) {
+		return true;
+		/*
 		boolean isReservationOk = true;
 		for(BookingAgent brother:ra.bas) {
 			if(brother!=this && brother.currCell==currCell) {
@@ -148,6 +151,7 @@ public class BookingAgent extends Agent {
 			}
 		}
 		return isReservationOk;
+		*/
 	}
 	
 	public void addBAsToMemory() {
@@ -180,16 +184,17 @@ public class BookingAgent extends Agent {
 	}
 	public void bookCell(Cell cell) {
 		if(cell.equals(currCell) || memoryCells.contains(cell)) {
-			cell.bookedBy = this;
+			if(this.representingEntity instanceof Teacher)
+				cell.bookedByTeacher = this;
+			else
+				cell.bookedBySG = this;
 		}
 	}
 	public void unbookCell(Cell cell) {
-		cell.bookedBy = null;
-	}
-	public void sendMessageToAgent(Message msg, Agent ag) {
-		if(ra.equals(ag) || partners.contains(ag)) {
-			
-		}
+		if(this.representingEntity instanceof Teacher)
+			cell.bookedByTeacher = null;
+		else
+			cell.bookedBySG = null;
 	}
 }
 

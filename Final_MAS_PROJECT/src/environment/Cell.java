@@ -13,14 +13,17 @@ public class Cell {
 	public Day day;
 	public Time time;
 	public Room room;
-	public BookingAgent bookedBy;
+	public BookingAgent bookedByTeacher;
+	public BookingAgent bookedBySG;
 	
 	public Cell(Day day, Time time, Room room) {
 		this.constraints = new ArrayList<Constraint>();
+		this.constraints.addAll(room.constraints);
 		this.day = day;
 		this.time = time;
 		this.room = room;
-		this.bookedBy = null;
+		this.bookedByTeacher = null;
+		this.bookedBySG = null;
 	}
 
 	@Override

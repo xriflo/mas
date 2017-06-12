@@ -26,20 +26,7 @@ public class GridSpace {
 			for(Time time:times)
 				for(Room room:rooms) {
 					Cell cell = new Cell(day, time, room);
-					cell.constraints = new ArrayList<Constraint>();
-					ArrayList<Constraint> constraintForRoom = constraints_for_room.get(room);
-					if(constraintForRoom!=null) {
-						for(Constraint constr:constraintForRoom) {
-							if(constr instanceof HasProjecterConstraint)
-								cell.constraints.add(constr);
-							else if(constr instanceof TimeConstraint) {
-								TimeConstraint tc = (TimeConstraint)constr;
-								if(tc.day.equals(day) && tc.time.equals(time))
-									cell.constraints.add(tc);
-							}
-						}
-						
-					}
+					cell.constraints = room.constraints;
 					cells.add(cell);
 				}
 		
@@ -95,7 +82,7 @@ public class GridSpace {
 	public String toString() {
 		String toStringVar = "GridSpace [\n";
 		for(Cell cell:cells)
-			System.out.println(cell);
+			toStringVar += cell;
 		toStringVar += "\n";
 		return toStringVar;
 	}

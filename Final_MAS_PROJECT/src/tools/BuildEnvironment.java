@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import agents.BookingAgent;
+import agents.BookingAgent2;
 import agents.RepresentativeAgent;
 import environment.Environment;
 import environment.GridSpace;
@@ -17,7 +18,7 @@ import utils.Time;
 import utils.TimeConstraint;
 
 public class BuildEnvironment {
-	Environment env;
+	public Environment env;
 	
 	public BuildEnvironment() {
 		// TODO Auto-generated constructor stub
@@ -40,26 +41,22 @@ public class BuildEnvironment {
 		//run agents
 		while(true) {
 			verifyAddRemoveConstraints();
-			for(BookingAgent ba:env.bas) {
+			for(BookingAgent2 ba:env.bas) {
 				ba.time += 1F;
 				ba.doTheMonkeyBusiness();
 			}
-			break; //-->remove this
+			//break; //-->remove this
 		}
 	}
 	
 	public void verifyAddRemoveConstraints() {
 		try(BufferedReader br = new BufferedReader(new FileReader("resources/addRemoveConstraints"))) {
 		    for(String line; (line = br.readLine()) != null; ) {
-		    	System.out.println(line);
 		    	String[] tokens = line.split(":");
 		    	switch(tokens[0]) {
 		    	case "time_constraints_for_teachers":
 		    		for(String constraint:tokens[1].trim().split(" ")) {
 		    			String[] params = constraint.split("\\W");
-		    			for(int i=0; i<params.length; i++) {
-		    				System.out.println(i+": "+params[i]);
-		    			}
 		    			Teacher t = new Teacher(params[0]);
 		    			TimeConstraint tc = new TimeConstraint(
 		    					new Day(params[2]), 
