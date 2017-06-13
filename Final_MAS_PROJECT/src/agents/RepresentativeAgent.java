@@ -37,6 +37,11 @@ public class RepresentativeAgent extends Agent{
 				env.bas.add(ba);
 			}
 		}
+		
+		for(BookingAgent2 ba:bas) {
+			ba.brothers = new ArrayList<BookingAgent2>(bas);
+			ba.brothers.remove(ba);
+		}
 	}
 	
 	public void addRemoveConstraint(Constraint constraint) {

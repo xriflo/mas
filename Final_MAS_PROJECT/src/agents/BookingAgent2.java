@@ -7,12 +7,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import environment.Cell;
 import environment.Environment;
+import nc.NC;
+import nc.NC_CB_ba_brother_cell;
+import nc.NC_CI_hasProjector_ba_ba;
+import nc.NC_CP_cell_ba_ba;
 import tools.Message;
 import tools.Settings;
 import utils.Constraint;
 import utils.Entity;
+import utils.HasProjecterConstraint;
 import utils.StudentGroup;
 import utils.Teacher;
+import utils.TimeConstraint;
 
 public class BookingAgent2 {
 	public RepresentativeAgent ra;
@@ -22,8 +28,9 @@ public class BookingAgent2 {
 	public HashSet<Cell> prevCells;
 	public Entity representingEntity;
 	public Entity stalkingEntity;
-	BookingAgent2 bookedPartner;
+	public BookingAgent2 bookedPartner;
 	public ArrayList<Constraint> constraints;
+	public ArrayList<BookingAgent2> brothers;
 	public Float time;
 	
 	public BookingAgent2(RepresentativeAgent ra, Environment env) {
@@ -42,6 +49,51 @@ public class BookingAgent2 {
 	
 	public void doTheMonkeyBusiness() {
 		
+	}
+	
+	public ArrayList<NC> nonCompatiblePartnership(BookingAgent2 otherBA) {
+		ArrayList<NC> listOfNonCompatibilities = new ArrayList<NC>();
+		for(Constraint myConstr:constraints) {
+			for(Constraint otherConstr:otherBA.constraints) {
+				if(myConstr instanceof HasProjecterConstraint && otherConstr instanceof HasProjecterConstraint) {
+					if(!myConstr.equals(otherConstr)) {
+						listOfNonCompatibilities.add(new NC_CI_hasProjector_ba_ba(this, otherBA));
+					}
+				}
+			}
+		}
+		
+		if(otherBA.bookedCell!=null) {
+			boolean brother_has_same_cell = false;
+			BookingAgent2 which_brother=null;
+			for(BookingAgent2 brother:brothers) {
+				if(otherBA.bookedCell.equals(brother.bookedCell)) {
+					brother_has_same_cell = true;
+					which_brother = brother;
+				}
+			}
+			if(brother_has_same_cell) {
+				listOfNonCompatibilities.add(new NC_CB_ba_brother_cell(this, which_brother, otherBA.bookedCell));
+			}
+		}
+		
+		if(bookedCell!=null) {
+			for(Constraint constr:otherBA.constraints) {
+				if(constr instanceof TimeConstraint) {
+					TimeConstraint tc = (TimeConstraint)constr;
+					if(tc.day==bookedCell.day && tc.time==bookedCell.time) {
+						listOfNonCompatibilities.add(new NC_CP_cell_ba_ba(this, otherBA, bookedCell));
+					}
+				}
+			}
+		}
+		return listOfNonCompatibilities;
+	}
+	
+	public ArrayList<NC> nonCompatibleReservation(Cell cell) {
+		ArrayList<NC> listOfNonCompatibilities = new ArrayList<NC>();
+		
+		return listOfNonCompatibilities;
 	}
 	
 	public void moveToNextCell() {
