@@ -17,7 +17,7 @@ import utils.StudentGroup;
 import utils.Teacher;
 import utils.TimeConstraint;
 
-public class BookingAgent extends Agent {
+public class BookingAgent3 extends Agent {
 	public Float time;
 	public boolean alive;
 	public Queue<Message> messages;
@@ -27,10 +27,10 @@ public class BookingAgent extends Agent {
 	public Environment env;
 	public Cell currCell;
 	public Cell currReservedCell;
-	public BookingAgent currPartner;
+	public BookingAgent3 currPartner;
 	public LinkedHashSet<Cell> memoryCells;
 	public LinkedHashSet<Cell> incompetentCells;
-	public LinkedHashSet<BookingAgent> incompetentPartners;
+	public LinkedHashSet<BookingAgent3> incompetentPartners;
 	public ArrayList<Constraint> constraints;
 	public ArrayList<Constraint> constraintsOfBrothers;
 	public ArrayList<Constraint> constraintsOfPartners;

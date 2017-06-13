@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import agents.BookingAgent;
+import agents.BookingAgent3;
 import agents.BookingAgent2;
 import agents.RepresentativeAgent;
 import environment.Environment;
@@ -39,14 +39,15 @@ public class BuildEnvironment {
 	
 	public void runEnv() {
 		//run agents
-		while(true) {
-			verifyAddRemoveConstraints();
+		for(Integer it=0; it<Settings.MAX_ITERATIONS; it++)
+			System.out.println("Iteration: "+it);
 			for(BookingAgent2 ba:env.bas) {
-				ba.time += 1F;
 				ba.doTheMonkeyBusiness();
 			}
 			//break; //-->remove this
-		}
+			for(BookingAgent2 ba:env.bas) {
+				System.out.println(ba+ ": "+ba.bookedCell+ " "+ba.bookedPartner);
+			}
 	}
 	
 	public void verifyAddRemoveConstraints() {

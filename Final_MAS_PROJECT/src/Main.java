@@ -16,7 +16,7 @@ public class Main {
 		be.createEnv("resources/testCase1");
 		
 		printInfo(be);
-		//be.runEnv();
+		be.runEnv();
 	}
 	
 	public static void printInfo(BuildEnvironment be) {

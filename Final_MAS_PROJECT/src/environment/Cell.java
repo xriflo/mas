@@ -2,7 +2,7 @@ package environment;
 
 import java.util.ArrayList;
 
-import agents.BookingAgent;
+import agents.BookingAgent3;
 import agents.BookingAgent2;
 import utils.Constraint;
 import utils.Day;

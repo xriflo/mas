@@ -3,7 +3,6 @@ package agents;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import environment.Cell;
 import environment.Environment;
@@ -15,7 +14,6 @@ import nc.NC_CI_time_ba_cell;
 import nc.NC_CP_cell_ba_ba;
 import nc.NC_CP_hasProjector_ba_cell;
 import nc.NC_CR_reservedCell_ba_ba;
-import tools.Message;
 import tools.Settings;
 import utils.Constraint;
 import utils.Entity;
@@ -52,9 +50,58 @@ public class BookingAgent2 {
 	}
 	
 	public void doTheMonkeyBusiness() {
-		
+		time += 1F;
+		if(bookedPartner!=null && bookedCell!=null) {
+			if(computeCostReservation(bookedCell)<1f) {
+				System.out.println(this+": I am gone!");
+				currCell = bookedCell;
+			}
+			else
+				processCurrentCell();
+		}
+		else {
+			moveToNextCell();
+			processEncounteredBAs(env.getRoommatesForBA(this));
+			if(!(bookedCell!=null || bookedPartner!=null)) {
+				processCurrentCell();
+			}
+		}
 	}
 	
+	public void processCurrentCell() {
+		if(bookedCell==null) {
+			bookCell(currCell);
+		}
+		else {
+			if(computeCostReservation(bookedCell)>computeCostReservation(currCell)) {
+				unbookCell(currCell);
+				bookCell(bookedCell);
+			}
+		}
+	}
+	
+	public void processEncounteredBAs(ArrayList<BookingAgent2> encounteredBAs) {
+		Float minCost = Float.MAX_VALUE;
+		BookingAgent2 which_agent = null;
+		for(BookingAgent2 encounteredBA : encounteredBAs) {
+			if(computeCostPartnership(encounteredBA)<minCost) {
+				minCost = computeCostPartnership(encounteredBA);
+				which_agent = encounteredBA;
+			}
+		}
+		if(which_agent!=null) {
+			if(bookedPartner==null) {
+				partnerBA(which_agent);
+			}
+			else {
+				if(computeCostPartnership(which_agent)<computeCostPartnership(bookedPartner)) {
+					unpartnerBA();
+					partnerBA(which_agent);
+				}
+			}
+		}
+	}
+
 	public ArrayList<NC> nonCompatiblePartnership(BookingAgent2 otherBA) {
 		ArrayList<NC> listOfNonCompatibilities = new ArrayList<NC>();
 		for(Constraint myConstr:constraints) {
@@ -147,7 +194,7 @@ public class BookingAgent2 {
 	public ArrayList<Float> assignWeight(ArrayList<NC> ncs) {
 		ArrayList<Float> weights = new ArrayList<Float>();
 		for(NC nc:ncs) {
-			weights.add(1.0F/((float)ncs.size()));
+			weights.add(1000.0F);
 		}
 		return weights;
 	}
@@ -205,4 +252,11 @@ public class BookingAgent2 {
 		else if(representingEntity instanceof StudentGroup && bookedCell.bookedBySG==this)
 			bookedCell.bookedBySG = null;
 	}
+
+	@Override
+	public String toString() {
+		return representingEntity.toString();
+	}
+	
+	
 }
