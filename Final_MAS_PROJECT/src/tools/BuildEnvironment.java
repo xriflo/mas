@@ -61,7 +61,7 @@ public class BuildEnvironment {
 		    			TimeConstraint tc = new TimeConstraint(
 		    					new Day(params[2]), 
 		    					new Time(Integer.parseInt(params[3]), Integer.parseInt(params[4])));
-		    			tc.addRemove = params[1];
+		    			//tc.addRemove = params[1];
 		    		}
 		    		break;
 		    	default:

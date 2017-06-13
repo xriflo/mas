@@ -10,7 +10,11 @@ import environment.Environment;
 import nc.NC;
 import nc.NC_CB_ba_brother_cell;
 import nc.NC_CI_hasProjector_ba_ba;
+import nc.NC_CI_hasProjector_ba_cell;
+import nc.NC_CI_time_ba_cell;
 import nc.NC_CP_cell_ba_ba;
+import nc.NC_CP_hasProjector_ba_cell;
+import nc.NC_CR_reservedCell_ba_ba;
 import tools.Message;
 import tools.Settings;
 import utils.Constraint;
@@ -82,7 +86,7 @@ public class BookingAgent2 {
 				if(constr instanceof TimeConstraint) {
 					TimeConstraint tc = (TimeConstraint)constr;
 					if(tc.day==bookedCell.day && tc.time==bookedCell.time) {
-						listOfNonCompatibilities.add(new NC_CP_cell_ba_ba(this, otherBA, bookedCell));
+						listOfNonCompatibilities.add(new NC_CR_reservedCell_ba_ba(this, otherBA, bookedCell));
 					}
 				}
 			}
@@ -93,7 +97,79 @@ public class BookingAgent2 {
 	public ArrayList<NC> nonCompatibleReservation(Cell cell) {
 		ArrayList<NC> listOfNonCompatibilities = new ArrayList<NC>();
 		
+		for(Constraint roomConstr:cell.room.constraints) {
+			if(roomConstr instanceof TimeConstraint) {
+				listOfNonCompatibilities.add(new NC_CI_time_ba_cell(this, cell));
+			}
+			else if(roomConstr instanceof HasProjecterConstraint) {
+				for(Constraint meConstr:constraints) {
+					if(meConstr instanceof HasProjecterConstraint) {
+						if(!roomConstr.equals(meConstr)) {
+							listOfNonCompatibilities.add(new NC_CI_hasProjector_ba_cell(this, cell));
+						}
+					}
+				}
+			}
+		}
+		
+		boolean brother_has_same_cell = false;
+		BookingAgent2 which_brother=null;
+		for(BookingAgent2 brother:brothers) {
+			if(cell.equals(brother.bookedCell)) {
+				brother_has_same_cell = true;
+				which_brother = brother;
+			}
+		}
+		if(brother_has_same_cell) {
+			listOfNonCompatibilities.add(new NC_CB_ba_brother_cell(this, which_brother, cell));
+		}
+		
+		if(bookedPartner!=null) {
+			for(Constraint partnerConst:bookedPartner.constraints) {
+				if(partnerConst instanceof TimeConstraint) {
+					TimeConstraint tc = (TimeConstraint)partnerConst;
+					if(tc.day==cell.day&&tc.time==cell.time) {
+						listOfNonCompatibilities.add(new NC_CP_cell_ba_ba(this, bookedPartner, cell));
+					}
+				}
+				if(partnerConst instanceof HasProjecterConstraint) {
+					for(Constraint roomConstr:cell.constraints) {
+						if(roomConstr instanceof HasProjecterConstraint) {
+							listOfNonCompatibilities.add(new NC_CP_hasProjector_ba_cell(this, bookedPartner, cell));
+						}
+					}
+				}
+			}
+		}
 		return listOfNonCompatibilities;
+	}
+	
+	public ArrayList<Float> assignWeight(ArrayList<NC> ncs) {
+		ArrayList<Float> weights = new ArrayList<Float>();
+		for(NC nc:ncs) {
+			weights.add(1.0F/((float)ncs.size()));
+		}
+		return weights;
+	}
+	
+	public Float computeCostPartnership(BookingAgent2 otherBA) {
+		ArrayList<NC> listOfNCPartnership = nonCompatiblePartnership(otherBA);
+		ArrayList<Float> weights = assignWeight(listOfNCPartnership);
+		Float difficulty = 0F;
+		for(Integer i=0; i<listOfNCPartnership.size(); i++) {
+			difficulty += weights.get(i);
+		}
+		return difficulty/time;
+	}
+	
+	public Float computeCostReservation(Cell cell) {
+		ArrayList<NC> listOfNCReservation = nonCompatibleReservation(cell);
+		ArrayList<Float> weights = assignWeight(listOfNCReservation);
+		Float difficulty = 0F;
+		for(Integer i=0; i<listOfNCReservation.size(); i++) {
+			difficulty += weights.get(i);
+		}
+		return difficulty;
 	}
 	
 	public void moveToNextCell() {
