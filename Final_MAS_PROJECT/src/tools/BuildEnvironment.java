@@ -39,15 +39,13 @@ public class BuildEnvironment {
 	
 	public void runEnv() {
 		//run agents
-		for(Integer it=0; it<Settings.MAX_ITERATIONS; it++)
+		for(Integer it=0; it<Settings.MAX_ITERATIONS; it++) {
 			System.out.println("Iteration: "+it);
 			for(BookingAgent2 ba:env.bas) {
 				ba.doTheMonkeyBusiness();
-			}
-			//break; //-->remove this
-			for(BookingAgent2 ba:env.bas) {
 				System.out.println(ba+ ": "+ba.bookedCell+ " "+ba.bookedPartner);
 			}
+		}
 	}
 	
 	public void verifyAddRemoveConstraints() {

@@ -14,5 +14,11 @@ public class NC_CP_cell_ba_ba extends NC{
 		this.partner = partner;
 		this.cell = cell;
 	}
+
+	@Override
+	public String toString() {
+		return "NC_CP_cell_ba_ba [me=" + me + ", partner=" + partner + ", cell=" + cell + "]";
+	}
+	
 	
 }

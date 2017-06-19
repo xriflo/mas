@@ -11,4 +11,10 @@ public class NC_CI_hasProjector_ba_cell extends NC{
 		this.me = me;
 		this.cell = cell;
 	}
+	@Override
+	public String toString() {
+		return "NC_CI_hasProjector_ba_cell [me=" + me + ", cell=" + cell + "]";
+	}
+	
+	
 }

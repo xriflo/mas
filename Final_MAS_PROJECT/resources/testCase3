@@ -1,0 +1,6 @@
+time: 8-10, 10-12
+days: D1
+teachers: T1
+students: SG1, SG2
+no_classes_to_take: T1(no_classes=1|needs_projector=0)
+rooms: R1

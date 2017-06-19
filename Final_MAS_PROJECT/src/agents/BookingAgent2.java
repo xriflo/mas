@@ -1,7 +1,11 @@
 package agents;
 
+import java.awt.print.Book;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 import environment.Cell;
@@ -14,6 +18,9 @@ import nc.NC_CI_time_ba_cell;
 import nc.NC_CP_cell_ba_ba;
 import nc.NC_CP_hasProjector_ba_cell;
 import nc.NC_CR_reservedCell_ba_ba;
+import tools.Message;
+import tools.PartnershipMessage;
+import tools.PartnershipMessage.INFO;
 import tools.Settings;
 import utils.Constraint;
 import utils.Entity;
@@ -33,7 +40,10 @@ public class BookingAgent2 {
 	public BookingAgent2 bookedPartner;
 	public ArrayList<Constraint> constraints;
 	public ArrayList<BookingAgent2> brothers;
+	public HashSet<BookingAgent2> acquitanceBAs;
+	public BookingAgent2 wantedPartner;
 	public Float time;
+	Queue<Message> messagesQueue = new LinkedList<Message>();
 	
 	public BookingAgent2(RepresentativeAgent ra, Environment env) {
 		this.ra = ra;
@@ -47,10 +57,83 @@ public class BookingAgent2 {
 		currCell = env.grid.cells.get(new Random().nextInt(env.grid.cells.size()));
 		this.prevCells = new HashSet<Cell>();
 		this.prevCells.add(currCell);
+		this.messagesQueue = new LinkedList<>();
+		this.wantedPartner = null;
+		this.acquitanceBAs = new HashSet<BookingAgent2>();
+	}
+	
+	public void processMessages() {
+		HashSet<PartnershipMessage> datingMessages = new HashSet<PartnershipMessage>();
+		while(messagesQueue.size()!=0) {
+			Message msg = messagesQueue.poll();
+			if(msg instanceof PartnershipMessage) {
+				PartnershipMessage m = (PartnershipMessage)msg;
+				
+				System.out.println("Recv msg from "+m.from+ " to "+m.to+": "+m.info);
+				switch(m.info) {
+				case WANTYOU:
+					datingMessages.add(m);
+					break;
+				case YES:
+					datingMessages.add(m);
+					break;
+				case YES2:
+					if(bookedPartner!=null) {
+						bookedPartner.messagesQueue.add(new PartnershipMessage(this, bookedPartner, INFO.NOMORE));
+						unpartnerBA();
+					}
+					partnerBA(m.from);
+					break;
+				case NO2:
+					break;
+				case NO:
+					break;
+				case NOMORE:
+					unpartnerBA();
+					break;
+				}
+			}
+		}
+		
+		PartnershipMessage bestMessage = null;
+		Float bestCost = Float.MAX_VALUE;
+		for(PartnershipMessage m:datingMessages) {
+			if(computeCostPartnership(m.from)<bestCost) {
+				bestMessage = m;
+				bestCost = computeCostPartnership(m.from);
+			}
+		}
+		if(bestCost<computeCostPartnership(bookedPartner)) {
+			for(PartnershipMessage m:datingMessages) {
+				if(m.equals(bestMessage)) {
+					if(m.info.equals(INFO.WANTYOU)) {
+						m.from.messagesQueue.add(new PartnershipMessage(this, m.from, INFO.YES));
+					}
+					else if(m.info.equals(INFO.YES)) {
+						m.from.messagesQueue.add(new PartnershipMessage(this, m.from, INFO.YES2));
+						if(bookedPartner!=null) {
+							bookedPartner.messagesQueue.add(new PartnershipMessage(this, bookedPartner, INFO.NOMORE));
+							unpartnerBA();
+						}
+						partnerBA(m.from);
+					}
+				}
+				else {
+					if(m.info.equals(INFO.WANTYOU)) {
+						m.from.messagesQueue.add(new PartnershipMessage(this, m.from, INFO.NO));
+					}
+					else if(m.info.equals(INFO.YES)) {
+						m.from.messagesQueue.add(new PartnershipMessage(this, m.from, INFO.NO2));
+					}
+				}
+			}
+		}
+		
 	}
 	
 	public void doTheMonkeyBusiness() {
 		time += 1F;
+		processMessages();
 		if(bookedPartner!=null && bookedCell!=null) {
 			if(computeCostReservation(bookedCell)<1f) {
 				System.out.println(this+": I am gone!");
@@ -69,44 +152,47 @@ public class BookingAgent2 {
 	}
 	
 	public void processCurrentCell() {
-		if(bookedCell==null) {
+		if(computeCostReservation(bookedCell) > computeCostReservation(currCell)) {
+			unbookCell(bookedCell);
 			bookCell(currCell);
-		}
-		else {
-			if(computeCostReservation(bookedCell)>computeCostReservation(currCell)) {
-				unbookCell(currCell);
-				bookCell(bookedCell);
-			}
+			
 		}
 	}
 	
+	//---------------------function processEncounteredBAs---------------------
 	public void processEncounteredBAs(ArrayList<BookingAgent2> encounteredBAs) {
-		Float minCost = Float.MAX_VALUE;
-		BookingAgent2 which_agent = null;
-		for(BookingAgent2 encounteredBA : encounteredBAs) {
-			if(computeCostPartnership(encounteredBA)<minCost) {
-				minCost = computeCostPartnership(encounteredBA);
-				which_agent = encounteredBA;
+		for(BookingAgent2 encounteredBA:encounteredBAs) {
+			if( (this.representingEntity instanceof Teacher && encounteredBA.representingEntity instanceof StudentGroup) ||
+				(this.representingEntity instanceof StudentGroup && encounteredBA.representingEntity instanceof Teacher)) {
+				acquitanceBAs.add(encounteredBA);
 			}
 		}
-		if(which_agent!=null) {
-			if(bookedPartner==null) {
-				partnerBA(which_agent);
+		
+		Float minCost = Float.MAX_VALUE;
+		for(BookingAgent2 encounteredBA : acquitanceBAs) {
+			if(computeCostPartnership(encounteredBA) < minCost) {
+				minCost = computeCostPartnership(encounteredBA);
 			}
-			else {
-				if(computeCostPartnership(which_agent)<computeCostPartnership(bookedPartner)) {
-					unpartnerBA();
-					partnerBA(which_agent);
-				}
-			}
+		}
+		
+		HashSet<BookingAgent2> chosenBAs = new HashSet<BookingAgent2>();
+		for(BookingAgent2 encounteredBA : acquitanceBAs) {
+			if(computeCostPartnership(encounteredBA) <= minCost)
+				chosenBAs.add(encounteredBA);
+		}
+				
+		for(BookingAgent2 chosenBA : chosenBAs) {
+			chosenBA.messagesQueue.add(new PartnershipMessage(this, chosenBA, INFO.WANTYOU));
 		}
 	}
-
+	
+	//---------------------function nonCompatiblePartnership---------------------
 	public ArrayList<NC> nonCompatiblePartnership(BookingAgent2 otherBA) {
 		ArrayList<NC> listOfNonCompatibilities = new ArrayList<NC>();
 		for(Constraint myConstr:constraints) {
 			for(Constraint otherConstr:otherBA.constraints) {
 				if(myConstr instanceof HasProjecterConstraint && otherConstr instanceof HasProjecterConstraint) {
+					//System.out.println(myConstr + " vs " + otherConstr);
 					if(!myConstr.equals(otherConstr)) {
 						listOfNonCompatibilities.add(new NC_CI_hasProjector_ba_ba(this, otherBA));
 					}
@@ -194,28 +280,35 @@ public class BookingAgent2 {
 	public ArrayList<Float> assignWeight(ArrayList<NC> ncs) {
 		ArrayList<Float> weights = new ArrayList<Float>();
 		for(NC nc:ncs) {
-			weights.add(1000.0F);
+			weights.add(10000f);
 		}
 		return weights;
 	}
 	
 	public Float computeCostPartnership(BookingAgent2 otherBA) {
+		if(otherBA==null)
+			return Float.MAX_VALUE;
 		ArrayList<NC> listOfNCPartnership = nonCompatiblePartnership(otherBA);
 		ArrayList<Float> weights = assignWeight(listOfNCPartnership);
 		Float difficulty = 0F;
 		for(Integer i=0; i<listOfNCPartnership.size(); i++) {
 			difficulty += weights.get(i);
 		}
+		//System.out.println("For "+this+" and "+otherBA+" the cost is: "+difficulty/time);
+		//System.out.println("Also the list of NC is: "+listOfNCPartnership);
 		return difficulty/time;
 	}
 	
 	public Float computeCostReservation(Cell cell) {
+		if(cell==null)
+			return Float.MAX_VALUE;
 		ArrayList<NC> listOfNCReservation = nonCompatibleReservation(cell);
 		ArrayList<Float> weights = assignWeight(listOfNCReservation);
 		Float difficulty = 0F;
 		for(Integer i=0; i<listOfNCReservation.size(); i++) {
 			difficulty += weights.get(i);
 		}
+		//System.out.println("For agent "+this+" the difficulty of cell "+cell+" is: "+difficulty);
 		return difficulty;
 	}
 	
@@ -226,10 +319,7 @@ public class BookingAgent2 {
 	}
 	
 	public void partnerBA(BookingAgent2 otherBA) {
-		if(	((representingEntity instanceof Teacher) && (otherBA.representingEntity instanceof StudentGroup)) ||
-			((representingEntity instanceof StudentGroup) && (otherBA.representingEntity instanceof Teacher))) {
 			bookedPartner = otherBA;
-		}
 	}
 	
 	public void unpartnerBA() {

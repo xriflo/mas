@@ -14,4 +14,11 @@ public class NC_CB_ba_brother_cell extends NC{
 		this.brother = brother;
 		this.cell = cell;
 	}
+
+	@Override
+	public String toString() {
+		return "NC_CB_ba_brother_cell [me=" + me + ", brother=" + brother + ", cell=" + cell + "]";
+	}
+	
+	
 }

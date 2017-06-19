@@ -13,7 +13,7 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		BuildEnvironment be = new BuildEnvironment();
-		be.createEnv("resources/testCase1");
+		be.createEnv("resources/testCase3");
 		
 		printInfo(be);
 		be.runEnv();

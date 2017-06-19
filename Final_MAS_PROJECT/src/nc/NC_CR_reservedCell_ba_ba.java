@@ -14,6 +14,11 @@ public class NC_CR_reservedCell_ba_ba extends NC{
 		this.other = other;
 		this.reservedCell = reservedCell;
 	}
+
+	@Override
+	public String toString() {
+		return "NC_CR_reservedCell_ba_ba [me=" + me + ", other=" + other + ", reservedCell=" + reservedCell + "]";
+	}
 	
 	
 }

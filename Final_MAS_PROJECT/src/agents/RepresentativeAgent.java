@@ -32,7 +32,6 @@ public class RepresentativeAgent extends Agent{
 				else {
 					ba.constraints.add(new HasProjecterConstraint(false));
 				}
-				System.out.println("BA="+ba.stalkingEntity+"is in cell ("+ba.currCell+") with neighbours "+env.grid.getNeighbours(ba.currCell));
 				bas.add(ba);
 				env.bas.add(ba);
 			}
