@@ -63,13 +63,13 @@ public class BookingAgent2 {
 	}
 	
 	public void processMessages() {
+		System.out.println(this+" is checking the messages");
 		HashSet<PartnershipMessage> datingMessages = new HashSet<PartnershipMessage>();
 		while(messagesQueue.size()!=0) {
 			Message msg = messagesQueue.poll();
 			if(msg instanceof PartnershipMessage) {
-				PartnershipMessage m = (PartnershipMessage)msg;
-				
-				System.out.println("Recv msg from "+m.from+ " to "+m.to+": "+m.info);
+				System.out.println(msg);
+				PartnershipMessage m = (PartnershipMessage)msg;				
 				switch(m.info) {
 				case WANTYOU:
 					datingMessages.add(m);
@@ -134,29 +134,28 @@ public class BookingAgent2 {
 	public void doTheMonkeyBusiness() {
 		time += 1F;
 		processMessages();
-		if(bookedPartner!=null && bookedCell!=null) {
-			if(computeCostReservation(bookedCell)<1f) {
-				System.out.println(this+": I am gone!");
-				currCell = bookedCell;
-			}
-			else
-				processCurrentCell();
-		}
-		else {
-			moveToNextCell();
-			processEncounteredBAs(env.getRoommatesForBA(this));
-			if(!(bookedCell!=null || bookedPartner!=null)) {
-				processCurrentCell();
-			}
+		moveToNextCell();
+		processEncounteredBAs(env.getRoommatesForBA(this));
+		if(bookedPartner!=null) {
+			processCurrentCell();
 		}
 	}
 	
 	public void processCurrentCell() {
-		if(computeCostReservation(bookedCell) > computeCostReservation(currCell)) {
-			unbookCell(bookedCell);
-			bookCell(currCell);
-			
-		}
+		//if the cell is free
+		if(!isCellBooked(currCell)) {
+			if(	computeCostReservation(currCell)<computeCostReservation(bookedCell) &&
+				bookedPartner.computeCostReservation(currCell)<bookedPartner.computeCostReservation(bookedCell)) {
+				unbookCell(bookedCell);
+				bookCell(currCell);
+				bookedPartner.unbookCell(bookedCell);
+				bookedPartner.bookCell(currCell);
+			}
+ 		}
+	}
+	
+	public boolean isCellBooked(Cell cell) {
+		return cell.bookedBySG!=null || cell.bookedByTeacher!=null;
 	}
 	
 	//---------------------function processEncounteredBAs---------------------
@@ -189,6 +188,8 @@ public class BookingAgent2 {
 	//---------------------function nonCompatiblePartnership---------------------
 	public ArrayList<NC> nonCompatiblePartnership(BookingAgent2 otherBA) {
 		ArrayList<NC> listOfNonCompatibilities = new ArrayList<NC>();
+		if(otherBA==null)
+			return listOfNonCompatibilities;
 		for(Constraint myConstr:constraints) {
 			for(Constraint otherConstr:otherBA.constraints) {
 				if(myConstr instanceof HasProjecterConstraint && otherConstr instanceof HasProjecterConstraint) {
@@ -229,7 +230,8 @@ public class BookingAgent2 {
 	
 	public ArrayList<NC> nonCompatibleReservation(Cell cell) {
 		ArrayList<NC> listOfNonCompatibilities = new ArrayList<NC>();
-		
+		if(cell==null)
+			return listOfNonCompatibilities;
 		for(Constraint roomConstr:cell.room.constraints) {
 			if(roomConstr instanceof TimeConstraint) {
 				listOfNonCompatibilities.add(new NC_CI_time_ba_cell(this, cell));
@@ -315,6 +317,7 @@ public class BookingAgent2 {
 	public void moveToNextCell() {
 		ArrayList<Cell> neighbours = env.grid.getNeighbours(currCell);
 		currCell = neighbours.get(new Random().nextInt(neighbours.size()));
+		System.out.println("Neighbourhood is: "+neighbours+" and I choose: "+currCell);
 		this.prevCells.add(currCell);
 	}
 	
@@ -337,9 +340,11 @@ public class BookingAgent2 {
 	}
 	
 	public void unbookCell(Cell otherCell) {
-		if(representingEntity instanceof Teacher && bookedCell.bookedByTeacher==this)
+		if(otherCell==null)
+			return;
+		if(representingEntity instanceof Teacher && otherCell.bookedByTeacher==this)
 			bookedCell.bookedByTeacher = null;
-		else if(representingEntity instanceof StudentGroup && bookedCell.bookedBySG==this)
+		else if(representingEntity instanceof StudentGroup && otherCell.bookedBySG==this)
 			bookedCell.bookedBySG = null;
 	}
 

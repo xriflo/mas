@@ -45,7 +45,17 @@ public class BuildEnvironment {
 				ba.doTheMonkeyBusiness();
 				System.out.println(ba+ ": "+ba.bookedCell+ " "+ba.bookedPartner);
 			}
+			System.out.println("No of constraints violated by this configurations is: "+ configurationEvaluation());
 		}
+	}
+	
+	public Integer configurationEvaluation() {
+		Integer total = 0;
+		for(BookingAgent2 ba:env.bas) {
+			total += ba.nonCompatiblePartnership(ba.bookedPartner).size() +
+					 ba.nonCompatibleReservation(ba.bookedCell).size();
+		}
+		return total;
 	}
 	
 	public void verifyAddRemoveConstraints() {
